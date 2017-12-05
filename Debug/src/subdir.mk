@@ -7,6 +7,7 @@ CPP_SRCS += \
 ../src/AIPlayer.cpp \
 ../src/Board.cpp \
 ../src/Cell.cpp \
+../src/Client.cpp \
 ../src/ConsoleMsgs.cpp \
 ../src/DefaultLogic.cpp \
 ../src/Game.cpp \
@@ -21,6 +22,7 @@ OBJS += \
 ./src/AIPlayer.o \
 ./src/Board.o \
 ./src/Cell.o \
+./src/Client.o \
 ./src/ConsoleMsgs.o \
 ./src/DefaultLogic.o \
 ./src/Game.o \
@@ -35,6 +37,7 @@ CPP_DEPS += \
 ./src/AIPlayer.d \
 ./src/Board.d \
 ./src/Cell.d \
+./src/Client.d \
 ./src/ConsoleMsgs.d \
 ./src/DefaultLogic.d \
 ./src/Game.d \
