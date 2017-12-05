@@ -1,5 +1,4 @@
 /*
-*check
  * Kfir Ventura
  * Avihay Arzuan
  */
