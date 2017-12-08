@@ -12,7 +12,7 @@ char HumanPlayer::getColor() const {
     return this->color;
 }
 
-void HumanPlayer::makeMove(GameLogic *logic, map<string, Cell> &posMoves,
+string HumanPlayer::makeMove(GameLogic *logic, map<string, Cell> &posMoves,
                            ConsoleMsgs printer) {
     int row, col;
 
@@ -36,6 +36,8 @@ void HumanPlayer::makeMove(GameLogic *logic, map<string, Cell> &posMoves,
         printer.illegalMove();
         //printer->plsEnterMove();
     } while (true);
-
+    string move;
     logic->executeOrder66(row, col);
+    move = String::intToPoint(row, col);
+    return move;
 }

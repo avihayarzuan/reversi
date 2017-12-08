@@ -12,6 +12,7 @@ CPP_SRCS += \
 ../src/DefaultLogic.cpp \
 ../src/Game.cpp \
 ../src/HumanPlayer.cpp \
+../src/LocalPlayer.cpp \
 ../src/MainMenu.cpp \
 ../src/MiniMaxAlgo.cpp \
 ../src/Point.cpp \
@@ -28,6 +29,7 @@ OBJS += \
 ./src/DefaultLogic.o \
 ./src/Game.o \
 ./src/HumanPlayer.o \
+./src/LocalPlayer.o \
 ./src/MainMenu.o \
 ./src/MiniMaxAlgo.o \
 ./src/Point.o \
@@ -44,6 +46,7 @@ CPP_DEPS += \
 ./src/DefaultLogic.d \
 ./src/Game.d \
 ./src/HumanPlayer.d \
+./src/LocalPlayer.d \
 ./src/MainMenu.d \
 ./src/MiniMaxAlgo.d \
 ./src/Point.d \

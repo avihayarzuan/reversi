@@ -34,7 +34,7 @@ class AIPlayer : public Player {
      * @param posMoves
      * @param printer
      */
-    void makeMove(GameLogic *logic, map<string, Cell> &posMoves, ConsoleMsgs printer);
+    string makeMove(GameLogic *logic, map<string, Cell> &posMoves, ConsoleMsgs printer);
 
  private:
     const char color;

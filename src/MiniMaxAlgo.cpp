@@ -9,7 +9,7 @@
 #define LOWNUM -1000
 #define STARTNUM 0
 
-void MiniMaxAlgo::useMiniMaxMove(GameLogic *logic, map<string, Cell> posMoves,
+string MiniMaxAlgo::useMiniMaxMove(GameLogic *logic, map<string, Cell> posMoves,
                                  char color, char opponentColor,
                                  Board * board) {
     int chosenRow = STARTNUM, chosenCol = STARTNUM, maxScoreRow = STARTNUM,
@@ -77,4 +77,5 @@ void MiniMaxAlgo::useMiniMaxMove(GameLogic *logic, map<string, Cell> posMoves,
     }
     //the minimax strategy decision
     logic->executeOrder66(chosenRow, chosenCol);
+    return String::intToPoint(chosenRow, chosenCol);
 }

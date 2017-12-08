@@ -6,8 +6,6 @@
  */
 
 #include "ServerChecker.h"
-
-#include "ServerChecker.h"
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -67,6 +65,7 @@ char ServerChecker::getColor() {
     cout << answer << endl;
     return answer;
 }
+
 int ServerChecker::sendMessage(char buff[]) {
     int stat;
     stat = write(clientSocket, buff, sizeof(char) * 256);
@@ -75,6 +74,7 @@ int ServerChecker::sendMessage(char buff[]) {
     }
     return stat;
 }
+
 int ServerChecker::readMessage() {
     int stat;
     char buff[256];

@@ -8,6 +8,8 @@
 #include "Board.h"
 #include "HumanPlayer.h"
 #include "AIPlayer.h"
+#include "LocalPlayer.h"
+#include "RemotePlayer.h"
 #include "DefaultLogic.h"
 #include "ConsoleMsgs.h"
 #include "MainMenu.h"
@@ -33,6 +35,9 @@ class Game {
     ConsoleMsgs printer;
     MainMenu menu;
     char currentColor;
+    void play();
+    void playRemote();
+    void RemoteplayOneTurn();
     int noPosMoves, numOfEmptyCells;
     /**
      * one of the players play one turn

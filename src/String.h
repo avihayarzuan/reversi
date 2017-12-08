@@ -20,6 +20,8 @@ class String {
    * @return "(x,y)"
    */
   static string intToPoint(int x, int y);
+  static int parseRow(string move); // from '(X, Y)' TO X
+  static int parseCol(string move); // from '(X, Y)' TO Y
 };
 
 #endif //EX2_STRING_H

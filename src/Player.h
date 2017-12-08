@@ -22,7 +22,7 @@ class Player {
      * @param posMoves - the possible moves to choose from.
      * @param printer - the console printer.
      */
-    virtual void makeMove(GameLogic *logic, map<string, Cell> &posMoves,
+    virtual string makeMove(GameLogic *logic, map<string, Cell> &posMoves,
                           ConsoleMsgs printer)= 0;
 
     // D'tor.

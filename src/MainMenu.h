@@ -10,7 +10,7 @@
 using namespace std;
 
 typedef enum userChoice {
-    humanPlayer, computerPlayer
+    humanPlayer = 1, computerPlayer, remotePlayer
 } userChoice;
 
 /*
