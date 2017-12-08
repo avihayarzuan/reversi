@@ -15,6 +15,7 @@ CPP_SRCS += \
 ../src/MainMenu.cpp \
 ../src/MiniMaxAlgo.cpp \
 ../src/Point.cpp \
+../src/ServerChecker.cpp \
 ../src/String.cpp \
 ../src/main.cpp 
 
@@ -30,6 +31,7 @@ OBJS += \
 ./src/MainMenu.o \
 ./src/MiniMaxAlgo.o \
 ./src/Point.o \
+./src/ServerChecker.o \
 ./src/String.o \
 ./src/main.o 
 
@@ -45,6 +47,7 @@ CPP_DEPS += \
 ./src/MainMenu.d \
 ./src/MiniMaxAlgo.d \
 ./src/Point.d \
+./src/ServerChecker.d \
 ./src/String.d \
 ./src/main.d 
 

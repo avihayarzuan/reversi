@@ -1,3 +1,3 @@
-src/main.o: ../src/main.cpp ../src/Client.h
+src/main.o: ../src/main.cpp ../src/ServerChecker.h
 
-../src/Client.h:
+../src/ServerChecker.h:

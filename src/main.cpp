@@ -11,29 +11,36 @@
 //
 //  return 0;
 //}
-#include "Client.h"
+#include "ServerChecker.h"
 #include <iostream>
 #include <stdlib.h>
 using namespace std;
 int main() {
-    Client client("127.0.0.1", 8000);
+    bool myTurn = true;
+    ServerChecker client("127.0.0.1", 8000);
     try {
         client.connectToServer();
     } catch (const char *msg) {
         cout << "Failed to connect to server. Reason:" << msg << endl;
         exit(-1);
     }
-    int num1, num2;
-    char op;
-    while (true) {
-        cout << "Enter an exercise (e.g., 15*19):";
-        cin >> num1 >> op >> num2;
-        cout << "Sending exercise: " << num1 << op << num2 << endl;
-        try {
-            int result = client.sendExercise(num1, op, num2);
-            cout << "Result: " << result << endl;
-        } catch (const char *msg) {
-            cout << "Failed to send exercise to server.Reason: " << msg << endl;
-        }
+        char buff[256];
+    if (client.getColor() == 'O') {
+        myTurn = false;
     }
+    while (myTurn) {
+        cout << "Enter message:" <<endl;
+        cin >> buff;
+        cout << "Sending message: " << buff << endl;
+        client.sendMessage(buff);
+        client.readMessage();
+    }
+    while (!myTurn) {
+            client.readMessage();
+            cout << "Enter message:" <<endl;
+            cin >> buff;
+            cout << "Sending message: " << buff << endl;
+            client.sendMessage(buff);
+        }
+
 }
