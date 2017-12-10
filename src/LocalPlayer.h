@@ -35,10 +35,10 @@ class LocalPlayer : public Player {
                           ConsoleMsgs printer);
     virtual ~LocalPlayer();
  private:
+    char color;
     const char *serverIP;
     int serverPort;
     int clientSocket;
-    char color;
 };
 
 #endif /* SRC_LOCALPLAYER_H_ */

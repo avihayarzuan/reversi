@@ -8,6 +8,7 @@
 
 #include <string>
 #include <cstdio>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ class String {
   static int parseRow(string move); // from '(X, Y)' TO X
   static int parseCol(string move); // from '(X, Y)' TO Y
  private:
-  int stoi(string str);
+  static int stoi(string str);
 };
 
 #endif //EX2_STRING_H

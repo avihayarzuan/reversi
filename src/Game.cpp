@@ -59,21 +59,21 @@ void Game::run() {
 //}
 
 void Game::playRemote() {
-    LocalPlayer local = new LocalPlayer("127.0.0.1", 8000);
-    try {
-        local.connectToServer();
-    } catch (const char *msg) {
-        cout << "Failed to connect to server. Reason: " << msg << endl;
-        exit(-1);
-    }
-    local.setColorFromSocket();
-    if (local.getColor() == WHITE) {
-        this->whitePlayer = local;
-        this->blackPlayer = new RemotePlayer(BLACK);
-    } else if (local.getColor() == BLACK) {
-        this->blackPlayer = local;
-        this->whitePlayer = new RemotePlayer(WHITE);
-    }
+//    LocalPlayer local = new LocalPlayer("127.0.0.1", 8000);
+//    try {
+//        local.connectToServer();
+//    } catch (const char *msg) {
+//        cout << "Failed to connect to server. Reason: " << msg << endl;
+//        exit(-1);
+//    }
+//    local.setColorFromSocket();
+//    if (local.getColor() == WHITE) {
+//        this->whitePlayer = local;
+//        this->blackPlayer = new RemotePlayer(BLACK);
+//    } else if (local.getColor() == BLACK) {
+//        this->blackPlayer = local;
+//        this->whitePlayer = new RemotePlayer(WHITE);
+//    }
 //
 //    while (this->shouldRun) {
 //        RemoteplayOneTurn();
