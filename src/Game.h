@@ -36,9 +36,11 @@ class Game {
     MainMenu menu;
     char currentColor;
     void play();
-    void playRemote();
+    void initRemote();
     void RemoteplayOneTurn();
-    int noPosMoves, numOfEmptyCells;
+    int noPosMoves, numOfEmptyCells, userChoice;
+    bool isLocalTurn;
+
     /**
      * one of the players play one turn
      */
