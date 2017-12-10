@@ -27,42 +27,61 @@ Game::~Game() {
 
 void Game::run() {
 	this->userChoice = this->menu.run();
-	if (this->userChoice == humanPlayer) {
-		this->blackPlayer = new HumanPlayer(BLACK);
-		this->whitePlayer = new HumanPlayer(WHITE);
-	} else if (this->userChoice == computerPlayer) {
-		this->blackPlayer = new HumanPlayer(BLACK);
-		this->whitePlayer = new AIPlayer(WHITE, this->board);
-	} else if (this->userChoice == remotePlayer) {
+
+	if (this->userChoice == remotePlayer) {
 		initRemote();
+	} else {
+		this->blackPlayer = new HumanPlayer(BLACK);
+
+		if (this->userChoice == computerPlayer) {
+			this->whitePlayer = new AIPlayer(WHITE, this->board);
+		} else {
+			this->whitePlayer = new HumanPlayer(WHITE);
+		}
 	}
 
 	play();
 }
 
 void Game::initRemote() {
-	LocalPlayer *local = new LocalPlayer("127.0.0.1", 8000);
+	// Initialize current player as a new Human Player with no color
+	this->currentPlayer = new HumanPlayer(EMPTY);
 
-	try {
-		local->connectToServer();
-	} catch (const char *msg) {
-		cout << "Failed to connect to server. Reason: " << msg << endl;
-		exit(-1);
-	}
-	local->setColorFromSocket();
-	if (local->getColor() == WHITE) {
-		this->whitePlayer = local;
-		this->blackPlayer = new RemotePlayer(BLACK);
+	// Set the connection and connect to the server, as well as set color
+	static_cast<HumanPlayer*>(this->currentPlayer)->setConnection("127.0.0.1",
+			8000);
+	static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
+	static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
+
+	// Initializing the second player and setting the current player
+	if (this->currentPlayer->getColor() == WHITE) {
+		this->whitePlayer = this->currentPlayer;
+		this->blackPlayer = new HumanPlayer(BLACK);
+
+		this->currentPlayer = this->blackPlayer;
 		this->isLocalTurn = false;
-	} else if (local->getColor() == BLACK) {
-		this->blackPlayer = local;
-		this->whitePlayer = new RemotePlayer(WHITE);
+	} else if (this->currentPlayer->getColor() == BLACK) {
+		this->blackPlayer = this->currentPlayer;
+		this->whitePlayer = new HumanPlayer(WHITE);
 	}
 }
-
-void Game::RemoteplayOneTurn() {
-
-}
+//	LocalPlayer *local = new LocalPlayer("127.0.0.1", 8000);
+//
+//	try {
+//		local->connectToServer();
+//	} catch (const char *msg) {
+//		cout << "Failed to connect to server. Reason: " << msg << endl;
+//		exit(-1);
+//	}
+//	local->setColorFromSocket();
+//	if (local->getColor() == WHITE) {
+//		this->whitePlayer = local;
+//		this->blackPlayer = new RemotePlayer(BLACK);
+//		this->isLocalTurn = false;
+//	} else if (local->getColor() == BLACK) {
+//		this->blackPlayer = local;
+//		this->whitePlayer = new RemotePlayer(WHITE);
+//	}
 
 void Game::play() {
 	while (this->shouldRun) {
@@ -102,11 +121,13 @@ void Game::playOneTurn() {
 			this->isLocalTurn = false;
 			string move = currentPlayer->makeMove(this->logic, posMoves,
 					this->printer);
-			this->currentPlayer->sendMessage(move);
+			static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(move);
+
 		} else {
 			this->isLocalTurn = true;
 
-			string remoteMove = this->currentPlayer->readMessage();
+			string remoteMove =
+					static_cast<HumanPlayer*>(this->currentPlayer)->readMessage();
 
 			this->logic->executeOrder66(String::parseRow(remoteMove),
 					String::parseCol(remoteMove));
