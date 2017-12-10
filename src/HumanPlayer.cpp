@@ -48,7 +48,7 @@ void HumanPlayer::connectToServer() {
     cout << "Connected to server" << endl;
 }
 
-int HumanPlayer::sendMessage(char &buff[]) {
+int HumanPlayer::sendMessage(char *&buff) {
     int stat;
     stat = write(clientSocket, buff, sizeof(char) * 256);
     if (stat == -1) {
@@ -57,7 +57,7 @@ int HumanPlayer::sendMessage(char &buff[]) {
     return stat;
 }
 
-int HumanPlayer::readMessage(char &buff[]) {
+int HumanPlayer::readMessage(char *&buff) {
     int stat;
 //    char returnBuff[256];
     stat = read(clientSocket, buff, sizeof(char) * 256);

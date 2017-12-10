@@ -25,8 +25,8 @@ class HumanPlayer : public Player {
 
     void setConnection(char *serverIP, int serverPort);
     void connectToServer();
-    int sendMessage(char &buff[]);
-    int readMessage(char &buff[]);
+    int sendMessage(char*&buff);
+    int readMessage(char* &buff);
     void setColorFromSocket();
     /**
      * @return player's color.
