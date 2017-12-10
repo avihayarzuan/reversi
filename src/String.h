@@ -22,6 +22,8 @@ class String {
   static string intToPoint(int x, int y);
   static int parseRow(string move); // from '(X, Y)' TO X
   static int parseCol(string move); // from '(X, Y)' TO Y
+ private:
+  int stoi(string str);
 };
 
 #endif //EX2_STRING_H
