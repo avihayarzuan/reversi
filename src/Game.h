@@ -39,6 +39,9 @@ class Game {
     void RemoteplayOneTurn();
     int noPosMoves, numOfEmptyCells, userChoice;
     bool isLocalTurn;
+    void endConnection();
+//    void sendNoMove();
+//    int specialMessage(string msg);
 
     /**
      * one of the players play one turn

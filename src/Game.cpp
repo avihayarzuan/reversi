@@ -4,8 +4,9 @@
  */
 #include "Game.h"
 
-Game::Game() :
-        noPosMoves(0), shouldRun(true) {
+Game::Game()
+        : noPosMoves(0),
+          shouldRun(true) {
     this->board = &b;
     this->whitePlayer = NULL;
     this->blackPlayer = NULL;
@@ -28,9 +29,15 @@ void Game::run() {
     this->userChoice = this->menu.run();
 
     if (this->userChoice == remotePlayer) {
-        initRemote();
+        try {
+            initRemote();
+        } catch (const char *msg) {
+            cout << "Cannot initialize Remote game. Reason: " << msg << endl;
+            exit(-1);
+        }
     } else {
         this->blackPlayer = new HumanPlayer(BLACK);
+        this->currentPlayer = this->blackPlayer;
 
         if (this->userChoice == computerPlayer) {
             this->whitePlayer = new AIPlayer(WHITE, this->board);
@@ -47,7 +54,8 @@ void Game::initRemote() {
     this->currentPlayer = new HumanPlayer(EMPTY);
 
     // Set the connection and connect to the server, as well as set color
-    static_cast<HumanPlayer*>(this->currentPlayer)->setConnection("127.0.0.1", 8000);
+    static_cast<HumanPlayer*>(this->currentPlayer)->setConnection("127.0.0.1",
+                                                                  8000);
     static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
     static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
@@ -70,56 +78,85 @@ void Game::play() {
         this->updateCurrentPlayer();
     }
     this->printWinner();
+    if (userChoice == remotePlayer) {
+        endConnection();
+    }
+}
+
+void Game::endConnection() {
+    char buf[] = "End";
+    try {
+        static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(buf);
+    } catch (const char *msg) {
+        cout << "Cannot send Message. Reason: " << msg << endl;
+        exit(-1);
+    }
 }
 
 void Game::playOneTurn() {
     map<string, Cell> posMoves = logic->getPossibleMoves(this->currentColor);
-
     this->printer.curBoard(this->board);
-
     if (!this->numOfEmptyCells) {
         this->shouldRun = false;
         return;
     }
-
     this->printer.itsYourMove(this->currentColor);
-
     if (posMoves.size()) {
         this->printer.posMoves(posMoves);
         this->noPosMoves = 0;
     } else {
         this->printer.noPosMoves();
         this->noPosMoves++;
-
-        if (this->noPosMoves == 2)
+        if (this->noPosMoves == 2) {
             this->shouldRun = false;
-
+        }
+        if (userChoice == remotePlayer) {
+            if (this->isLocalTurn) {
+                this->isLocalTurn = false;
+            } else {
+                this->isLocalTurn = true;
+            }
+        }
         return;
     }
-
     if (userChoice == remotePlayer) {
         if (this->isLocalTurn) {
             this->isLocalTurn = false;
             string move = currentPlayer->makeMove(this->logic, posMoves,
-                    this->printer);
+                                                  this->printer);
             char buf[256];
-
             strcpy(buf, move.c_str());
-            static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(buf);
-
+            try {
+                static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
+                        buf);
+            } catch (const char *msg) {
+                cout << "Cannot send Message. Reason: " << msg << endl;
+                exit(-1);
+            }
         } else {
             this->isLocalTurn = true;
-            char buf[256];
-            char*p = buf;
-            static_cast<HumanPlayer*>(this->currentPlayer)->readMessage(p);
-            string remoteMove = buf;
-            this->logic->executeOrder66(String::parseRow(remoteMove),
-                    String::parseCol(remoteMove));
+            if (this->currentPlayer->getColor() == BLACK) {
+                try {
+                    static_cast<HumanPlayer*>(this->whitePlayer)->readMessage();
+                } catch (const char *msg) {
+                    cout << "Cannot send Message. Reason: " << msg << endl;
+                    exit(-1);
+                }
+                string remoteMove = static_cast<HumanPlayer*>(this->whitePlayer)
+                        ->getRemoteMove();
+                this->logic->executeOrder66(String::parseRow(remoteMove),
+                                            String::parseCol(remoteMove));
+            } else {
+                static_cast<HumanPlayer*>(this->blackPlayer)->readMessage();
+                string remoteMove = static_cast<HumanPlayer*>(this->blackPlayer)
+                        ->getRemoteMove();
+                this->logic->executeOrder66(String::parseRow(remoteMove),
+                                            String::parseCol(remoteMove));
+            }
         }
     } else {
         currentPlayer->makeMove(this->logic, posMoves, this->printer);
     }
-
     this->numOfEmptyCells--;
 }
 

@@ -26,8 +26,9 @@ class HumanPlayer : public Player {
     void setConnection(const char *serverIP, int serverPort);
     void connectToServer();
     int sendMessage(char buff[]);
-    int readMessage(char *p);
+    int readMessage();
     void setColorFromSocket();
+    string getRemoteMove();
     /**
      * @return player's color.
      */
@@ -56,6 +57,7 @@ class HumanPlayer : public Player {
     const char *serverIP;
     int serverPort;
     int clientSocket;
+    string remoteMove;
 };
 
 #endif //EX2_HUMANPLAYER_H
