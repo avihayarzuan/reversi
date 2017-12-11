@@ -12,11 +12,10 @@ CPP_SRCS += \
 ../src/DefaultLogic.cpp \
 ../src/Game.cpp \
 ../src/HumanPlayer.cpp \
-../src/LocalPlayer.cpp \
 ../src/MainMenu.cpp \
 ../src/MiniMaxAlgo.cpp \
 ../src/Point.cpp \
-../src/RemotePlayer.cpp \
+../src/ReadSettings.cpp \
 ../src/ServerChecker.cpp \
 ../src/String.cpp \
 ../src/main.cpp 
@@ -30,11 +29,10 @@ OBJS += \
 ./src/DefaultLogic.o \
 ./src/Game.o \
 ./src/HumanPlayer.o \
-./src/LocalPlayer.o \
 ./src/MainMenu.o \
 ./src/MiniMaxAlgo.o \
 ./src/Point.o \
-./src/RemotePlayer.o \
+./src/ReadSettings.o \
 ./src/ServerChecker.o \
 ./src/String.o \
 ./src/main.o 
@@ -48,11 +46,10 @@ CPP_DEPS += \
 ./src/DefaultLogic.d \
 ./src/Game.d \
 ./src/HumanPlayer.d \
-./src/LocalPlayer.d \
 ./src/MainMenu.d \
 ./src/MiniMaxAlgo.d \
 ./src/Point.d \
-./src/RemotePlayer.d \
+./src/ReadSettings.d \
 ./src/ServerChecker.d \
 ./src/String.d \
 ./src/main.d 

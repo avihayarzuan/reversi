@@ -1,2 +1,2 @@
-server IP:
-
+server Port: (8000)
+client IP: (127.0.0.1)

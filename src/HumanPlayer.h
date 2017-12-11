@@ -23,10 +23,10 @@ class HumanPlayer : public Player {
      */
     HumanPlayer(char color);
 
-    void setConnection(char *serverIP, int serverPort);
+    void setConnection(const char *serverIP, int serverPort);
     void connectToServer();
-    int sendMessage(char*&buff);
-    int readMessage(char* &buff);
+    int sendMessage(char buff[]);
+    int readMessage(char *p);
     void setColorFromSocket();
     /**
      * @return player's color.
@@ -53,7 +53,7 @@ class HumanPlayer : public Player {
      * Members.
      */
     char color;
-    char *serverIP;
+    const char *serverIP;
     int serverPort;
     int clientSocket;
 };

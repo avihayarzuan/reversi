@@ -11,44 +11,74 @@ HumanPlayer::HumanPlayer(char color)
     this->clientSocket = 0;
 }
 
-void HumanPlayer::setConnection(char *serverIP, int serverPort) {
+void HumanPlayer::setConnection(const char *serverIP, int serverPort) {
     this->serverIP = serverIP;
     this->serverPort = serverPort;
 }
 
 void HumanPlayer::connectToServer() {
     // Create a socket point
-    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (clientSocket == -1) {
-        throw "Error opening socket";
-    }
-    // Convert the ip string to a network address
-    struct in_addr address;
-    if (!inet_aton(serverIP, &address)) {
-        throw "Can't parse IP address";
-    }
-    // Get a hostent structure for the given host address
-    struct hostent *server;
-    server = gethostbyaddr((const void *) &address, sizeof address, AF_INET);
-    if (server == NULL) {
-        throw "Host is unreachable";
-    }
-    // Create a structure for the server address
-    struct sockaddr_in serverAddress;
-    bzero((char *) &address, sizeof(address));
-    serverAddress.sin_family = AF_INET;
-    memcpy((char *) &serverAddress.sin_addr.s_addr, (char *) server->h_addr, server->h_length);
-    // htons converts values between host and network byte orders
-    serverAddress.sin_port = htons(serverPort);
-    // Establish a connection with the TCP server
-    if (connect(clientSocket, (struct sockaddr *) &serverAddress,
-                sizeof(serverAddress)) == -1) {
-        throw "Error connecting to server";
-    }
-    cout << "Connected to server" << endl;
+        clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (clientSocket == -1) {
+            throw "Error opening socket";
+        }
+        // Convert the ip string to a network address
+        struct in_addr address;
+        if (!inet_aton(serverIP, &address)) {
+            throw "Can't parse IP address";
+        }
+        // Get a hostent structure for the given host address
+        struct hostent *server;
+        server = gethostbyaddr((const void *)&address, sizeof
+                address, AF_INET);
+        if (server == NULL) {
+            throw "Host is unreachable";
+        }
+        // Create a structure for the server address
+        struct sockaddr_in serverAddress;
+        bzero((char *)&address, sizeof(address));
+        serverAddress.sin_family = AF_INET;
+        memcpy((char *)&serverAddress.sin_addr.s_addr, (char *)server->h_addr, server->h_length);
+        // htons converts values between host and network byte orders
+        serverAddress.sin_port = htons(serverPort);
+        // Establish a connection with the TCP server
+        if (connect(clientSocket, (const struct sockaddr *)&serverAddress, sizeof(serverAddress)) == -1) {
+            throw "Error connecting to server";
+        }
+        cout << "Connected to server" << endl;
+
+//    // Create a socket point
+//    clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+//    if (clientSocket == -1) {
+//        throw "Error opening socket";
+//    }
+//    // Convert the ip string to a network address
+//    struct in_addr address;
+//    if (!inet_aton(serverIP, &address)) {
+//        throw "Can't parse IP address";
+//    }
+//    // Get a hostent structure for the given host address
+//    struct hostent *server;
+//    server = gethostbyaddr((const void *) &address, sizeof address, AF_INET);
+//    if (server == NULL) {
+//        throw "Host is unreachable";
+//    }
+//    // Create a structure for the server address
+//    struct sockaddr_in serverAddress;
+//    bzero((char *) &address, sizeof(address));
+//    serverAddress.sin_family = AF_INET;
+//    memcpy((char *) &serverAddress.sin_addr.s_addr, (char *) server->h_addr, server->h_length);
+//    // htons converts values between host and network byte orders
+//    serverAddress.sin_port = htons(serverPort);
+//    // Establish a connection with the TCP server
+//    if (connect(clientSocket, (struct sockaddr *) &serverAddress,
+//                sizeof(serverAddress)) == -1) {
+//        throw "Error connecting to server";
+//    }
+//    cout << "Connected to server" << endl;
 }
 
-int HumanPlayer::sendMessage(char *&buff) {
+int HumanPlayer::sendMessage(char buff[]) {
     int stat;
     stat = write(clientSocket, buff, sizeof(char) * 256);
     if (stat == -1) {
@@ -57,14 +87,14 @@ int HumanPlayer::sendMessage(char *&buff) {
     return stat;
 }
 
-int HumanPlayer::readMessage(char *&buff) {
+int HumanPlayer::readMessage(char *p) {
     int stat;
 //    char returnBuff[256];
-    stat = read(clientSocket, buff, sizeof(char) * 256);
+    stat = read(clientSocket, p, sizeof(char) * 256);
     if (stat == -1) {
         throw "Error reading message from socket";
     }
-    cout << buff << endl;
+    cout << p << endl;
     return stat;
 }
 

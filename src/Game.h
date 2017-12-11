@@ -8,12 +8,11 @@
 #include "Board.h"
 #include "HumanPlayer.h"
 #include "AIPlayer.h"
-#include "LocalPlayer.h"
-#include "RemotePlayer.h"
 #include "DefaultLogic.h"
 #include "ConsoleMsgs.h"
 #include "MainMenu.h"
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
@@ -36,9 +35,11 @@ class Game {
     MainMenu menu;
     char currentColor;
     void play();
-    void playRemote();
+    void initRemote();
     void RemoteplayOneTurn();
-    int noPosMoves, numOfEmptyCells;
+    int noPosMoves, numOfEmptyCells, userChoice;
+    bool isLocalTurn;
+
     /**
      * one of the players play one turn
      */

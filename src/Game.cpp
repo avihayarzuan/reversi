@@ -4,9 +4,8 @@
  */
 #include "Game.h"
 
-Game::Game()
-        : noPosMoves(0),
-          shouldRun(true) {
+Game::Game() :
+        noPosMoves(0), shouldRun(true) {
     this->board = &b;
     this->whitePlayer = NULL;
     this->blackPlayer = NULL;
@@ -14,7 +13,9 @@ Game::Game()
     this->numOfEmptyCells = (this->board->getSize() * this->board->getSize())
             - 4;
     this->currentPlayer = this->blackPlayer;
-    this->currentColor = this->currentPlayer->getColor();
+    this->currentColor = BLACK;
+    this->userChoice = 0;
+    this->isLocalTurn = true;
 }
 
 Game::~Game() {
@@ -24,66 +25,43 @@ Game::~Game() {
 }
 
 void Game::run() {
-    int userDecision = this->menu.run();
-    if (userDecision == humanPlayer) {
+    this->userChoice = this->menu.run();
+
+    if (this->userChoice == remotePlayer) {
+        initRemote();
+    } else {
         this->blackPlayer = new HumanPlayer(BLACK);
-        this->whitePlayer = new HumanPlayer(WHITE);
-        play();
-    } else if (userDecision == computerPlayer) {
-        this->blackPlayer = new HumanPlayer(BLACK);
-        this->whitePlayer = new AIPlayer(WHITE, this->board);
-        play();
-    } else if (userDecision == remotePlayer) {
-        playRemote();
+
+        if (this->userChoice == computerPlayer) {
+            this->whitePlayer = new AIPlayer(WHITE, this->board);
+        } else {
+            this->whitePlayer = new HumanPlayer(WHITE);
+        }
     }
+
+    play();
 }
-//        char buff[256];
-//    if (client.getColor() == 'O') {
-//        myTurn = false;
-//    }
-//    while (myTurn) {
-//        cout << "Enter message:" <<endl;
-//        cin >> buff;
-//        cout << "Sending message: " << buff << endl;
-//        client.sendMessage(buff);
-//        client.readMessage();
-//    }
-//    while (!myTurn) {
-//            client.readMessage();
-//            cout << "Enter message:" <<endl;
-//            cin >> buff;
-//            cout << "Sending message: " << buff << endl;
-//            client.sendMessage(buff);
-//        }
-//
-//}
 
-void Game::playRemote() {
-//    LocalPlayer local = new LocalPlayer("127.0.0.1", 8000);
-//    try {
-//        local.connectToServer();
-//    } catch (const char *msg) {
-//        cout << "Failed to connect to server. Reason: " << msg << endl;
-//        exit(-1);
-//    }
-//    local.setColorFromSocket();
-//    if (local.getColor() == WHITE) {
-//        this->whitePlayer = local;
-//        this->blackPlayer = new RemotePlayer(BLACK);
-//    } else if (local.getColor() == BLACK) {
-//        this->blackPlayer = local;
-//        this->whitePlayer = new RemotePlayer(WHITE);
-//    }
-//
-//    while (this->shouldRun) {
-//        RemoteplayOneTurn();
-//        this->updateCurrentPlayer();
-//    }
-//    this->printWinner();
-}
-void Game::RemoteplayOneTurn() {
+void Game::initRemote() {
+    // Initialize current player as a new Human Player with no color
+    this->currentPlayer = new HumanPlayer(EMPTY);
 
+    // Set the connection and connect to the server, as well as set color
+    static_cast<HumanPlayer*>(this->currentPlayer)->setConnection("127.0.0.1", 8000);
+    static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
+    static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
+    // Initializing the second player and setting the current player
+    if (this->currentPlayer->getColor() == WHITE) {
+        this->whitePlayer = this->currentPlayer;
+        this->blackPlayer = new HumanPlayer(BLACK);
+
+        this->currentPlayer = this->blackPlayer;
+        this->isLocalTurn = false;
+    } else if (this->currentPlayer->getColor() == BLACK) {
+        this->blackPlayer = this->currentPlayer;
+        this->whitePlayer = new HumanPlayer(WHITE);
+    }
 }
 
 void Game::play() {
@@ -119,7 +97,28 @@ void Game::playOneTurn() {
         return;
     }
 
-    currentPlayer->makeMove(this->logic, posMoves, this->printer);
+    if (userChoice == remotePlayer) {
+        if (this->isLocalTurn) {
+            this->isLocalTurn = false;
+            string move = currentPlayer->makeMove(this->logic, posMoves,
+                    this->printer);
+            char buf[256];
+
+            strcpy(buf, move.c_str());
+            static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(buf);
+
+        } else {
+            this->isLocalTurn = true;
+            char buf[256];
+            char*p = buf;
+            static_cast<HumanPlayer*>(this->currentPlayer)->readMessage(p);
+            string remoteMove = buf;
+            this->logic->executeOrder66(String::parseRow(remoteMove),
+                    String::parseCol(remoteMove));
+        }
+    } else {
+        currentPlayer->makeMove(this->logic, posMoves, this->printer);
+    }
 
     this->numOfEmptyCells--;
 }

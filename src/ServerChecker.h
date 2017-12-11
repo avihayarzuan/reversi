@@ -7,6 +7,15 @@
 
 #ifndef SRC_SERVERCHECKER_H_
 #define SRC_SERVERCHECKER_H_
+#include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <string.h>
+#include <cstring>
+#include <unistd.h>
+#include <cstdlib>
 
 
 
@@ -20,11 +29,11 @@ class ServerChecker {
      int sendMessage(char buff[256]);
      int readMessage();
      char getColor();
-//     int sendExercise(int arg1, char op, int arg2);
   private:
      const char *serverIP;
      int serverPort;
      int clientSocket;
+     sockaddr_in connectionDetails;
  };
 
 #endif /* SRC_SERVERCHECKER_H_ */

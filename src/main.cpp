@@ -3,44 +3,21 @@
  * Avihay Arzuan
  */
 #include "Game.h"
+#include "ReadSettings.h"
+#include "ServerChecker.h"
 
 int main() {
-  Game *game = new Game();
-  game->run();
-  delete game;
-
-  return 0;
-}
-//#include "ServerChecker.h"
-//#include <iostream>
-//#include <stdlib.h>
-//using namespace std;
-//int main() {
-//    bool myTurn = true;
-//    ServerChecker client("127.0.0.1", 8000);
+//
+//    ServerChecker s("127.0.0.1", 7000);
 //    try {
-//        client.connectToServer();
-//    } catch (const char *msg) {
-//        cout << "Failed to connect to server. Reason:" << msg << endl;
+//        s.connectToServer();
+//    } catch (const char* msg) {
+//        cout << "fail " << msg << endl;
 //        exit(-1);
 //    }
-//        char buff[256];
-//    if (client.getColor() == 'O') {
-//        myTurn = false;
-//    }
-//    while (myTurn) {
-//        cout << "Enter message:" <<endl;
-//        cin >> buff;
-//        cout << "Sending message: " << buff << endl;
-//        client.sendMessage(buff);
-//        client.readMessage();
-//    }
-//    while (!myTurn) {
-//            client.readMessage();
-//            cout << "Enter message:" <<endl;
-//            cin >> buff;
-//            cout << "Sending message: " << buff << endl;
-//            client.sendMessage(buff);
-//        }
-//
-//}
+    Game *game = new Game();
+    game->run();
+    delete game;
+
+    return 0;
+}
