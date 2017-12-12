@@ -11,6 +11,7 @@
 #include "DefaultLogic.h"
 #include "ConsoleMsgs.h"
 #include "MainMenu.h"
+#include "ReadSettings.h"
 #include <iostream>
 #include <string.h>
 
@@ -29,20 +30,31 @@ class Game {
  private:
     Board b;
     Board *board;
-    Player *whitePlayer, *blackPlayer, *currentPlayer;
+    Player *whitePlayer, *blackPlayer, *currentPlayer, *notCurrentPlayer;
     GameLogic *logic;
     ConsoleMsgs printer;
     MainMenu menu;
     char currentColor;
-    void play();
-    void initRemote();
-    void RemoteplayOneTurn();
     int noPosMoves, numOfEmptyCells, userChoice;
     bool isLocalTurn;
+    /**
+     * the functions run's loop for the play one turn methods
+     */
+    void play();
+    /**
+     * initialize the connections required for remote game
+     */
+    void initRemote();
+    /**
+     * play one turn method using read message and send message methods
+     * of the player.
+     */
+    void remoteplayOneTurn();
+    /**
+     * end the connection with the server and let the sever be available
+     * for other connections.
+     */
     void endConnection();
-//    void sendNoMove();
-//    int specialMessage(string msg);
-
     /**
      * one of the players play one turn
      */

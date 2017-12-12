@@ -14,6 +14,7 @@ Game::Game()
     this->numOfEmptyCells = (this->board->getSize() * this->board->getSize())
             - 4;
     this->currentPlayer = this->blackPlayer;
+    this->notCurrentPlayer = this->whitePlayer;
     this->currentColor = BLACK;
     this->userChoice = 0;
     this->isLocalTurn = true;
@@ -54,8 +55,11 @@ void Game::initRemote() {
     this->currentPlayer = new HumanPlayer(EMPTY);
 
     // Set the connection and connect to the server, as well as set color
-    static_cast<HumanPlayer*>(this->currentPlayer)->setConnection("127.0.0.1",
-                                                                  8000);
+    char buf[] = "settings.txt";
+    string ip = ReadSettings::getIP(buf);
+    const char * i = ip.c_str();
+    int port = ReadSettings::getPort(buf);
+    static_cast<HumanPlayer*>(this->currentPlayer)->setConnection(i, port);
     static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
     static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
@@ -63,18 +67,23 @@ void Game::initRemote() {
     if (this->currentPlayer->getColor() == WHITE) {
         this->whitePlayer = this->currentPlayer;
         this->blackPlayer = new HumanPlayer(BLACK);
-
         this->currentPlayer = this->blackPlayer;
+        this->notCurrentPlayer = this->whitePlayer;
         this->isLocalTurn = false;
     } else if (this->currentPlayer->getColor() == BLACK) {
         this->blackPlayer = this->currentPlayer;
         this->whitePlayer = new HumanPlayer(WHITE);
+        this->notCurrentPlayer = blackPlayer;
     }
 }
 
 void Game::play() {
     while (this->shouldRun) {
-        playOneTurn();
+        if (userChoice == remotePlayer) {
+            remoteplayOneTurn();
+        } else {
+            playOneTurn();
+        }
         this->updateCurrentPlayer();
     }
     this->printWinner();
@@ -83,13 +92,86 @@ void Game::play() {
     }
 }
 
-void Game::endConnection() {
-    char buf[] = "End";
-    try {
-        static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(buf);
-    } catch (const char *msg) {
-        cout << "Cannot send Message. Reason: " << msg << endl;
-        exit(-1);
+void Game::remoteplayOneTurn() {
+    map<string, Cell> posMoves = logic->getPossibleMoves(this->currentColor);
+
+    this->printer.curBoard(this->board);
+    if (!this->numOfEmptyCells) {
+        this->shouldRun = false;
+        return;
+    }
+    this->printer.itsYourMove(this->currentColor);
+    if (posMoves.size()) {
+        this->printer.posMoves(posMoves);
+        this->noPosMoves = 0;
+    } else {
+        this->printer.noPosMoves();
+        this->noPosMoves++;
+        if (this->noPosMoves == 2) {
+            this->shouldRun = false;
+            return;
+        }
+    }
+
+    if (this->isLocalTurn) {
+//        this->isLocalTurn = false;
+
+// if there are possiblemoves
+        if (posMoves.size()) {
+            string move = currentPlayer->makeMove(this->logic, posMoves,
+                                                  this->printer);
+            char buf[SIZE];
+            strcpy(buf, move.c_str());
+            try {
+                static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
+                        buf);
+            } catch (const char *msg) {
+                cout << "Cannot send Message. Reason: " << msg << endl;
+                exit(-1);
+            }
+
+            // if there are no possiblemoves:
+        } else {
+            char buf[] = "no-move";
+            try {
+                static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
+                        buf);
+            } catch (const char *msg) {
+                cout << "Cannot send Message. Reason: " << msg << endl;
+                exit(-1);
+            }
+        }
+    } else {
+        // if it's not local turn:
+//        this->isLocalTurn = true;
+
+// if there are possiblemoves
+        if (posMoves.size()) {
+            try {
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readMessage();
+            } catch (const char *msg) {
+                cout << "Cannot read Message. Reason: " << msg << endl;
+                exit(-1);
+            }
+            string remoteMove =
+                    static_cast<HumanPlayer*>(this->notCurrentPlayer)
+                            ->getRemoteMove();
+            this->logic->executeOrder66(String::parseRow(remoteMove),
+                                        String::parseCol(remoteMove));
+            this->numOfEmptyCells--;
+
+            // if there are no possiblemoves:
+        } else {
+            try {
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readMessage();
+                string remoteMove = static_cast<HumanPlayer*>(this
+                        ->currentPlayer)->getRemoteMove();
+                cout << remoteMove << endl;
+            } catch (const char *msg) {
+                cout << "Cannot read Message. Reason: " << msg << endl;
+                exit(-1);
+            }
+        }
     }
 }
 
@@ -110,54 +192,42 @@ void Game::playOneTurn() {
         if (this->noPosMoves == 2) {
             this->shouldRun = false;
         }
-        if (userChoice == remotePlayer) {
-            if (this->isLocalTurn) {
-                this->isLocalTurn = false;
-            } else {
-                this->isLocalTurn = true;
-            }
-        }
         return;
     }
+    currentPlayer->makeMove(this->logic, posMoves, this->printer);
+    this->numOfEmptyCells--;
+}
+
+void Game::endConnection() {
+    char buf[] = "End";
+    try {
+        int stat = static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
+                buf);
+        if (stat < 0) {
+            cout << "Game ended - disconnected from server" << endl;
+        }
+    } catch (const char *msg) {
+        cout << "Cannot send Message. Reason: " << msg << endl;
+        exit(-1);
+    }
+}
+
+void Game::updateCurrentPlayer() {
+    if (isCurrentWhite()) {
+        this->updateToBlack();
+    } else {
+        this->updateToWhite();
+    }
+
+    this->currentColor = this->currentPlayer->getColor();
+
     if (userChoice == remotePlayer) {
-        if (this->isLocalTurn) {
+        if (isLocalTurn) {
             this->isLocalTurn = false;
-            string move = currentPlayer->makeMove(this->logic, posMoves,
-                                                  this->printer);
-            char buf[256];
-            strcpy(buf, move.c_str());
-            try {
-                static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
-                        buf);
-            } catch (const char *msg) {
-                cout << "Cannot send Message. Reason: " << msg << endl;
-                exit(-1);
-            }
         } else {
             this->isLocalTurn = true;
-            if (this->currentPlayer->getColor() == BLACK) {
-                try {
-                    static_cast<HumanPlayer*>(this->whitePlayer)->readMessage();
-                } catch (const char *msg) {
-                    cout << "Cannot send Message. Reason: " << msg << endl;
-                    exit(-1);
-                }
-                string remoteMove = static_cast<HumanPlayer*>(this->whitePlayer)
-                        ->getRemoteMove();
-                this->logic->executeOrder66(String::parseRow(remoteMove),
-                                            String::parseCol(remoteMove));
-            } else {
-                static_cast<HumanPlayer*>(this->blackPlayer)->readMessage();
-                string remoteMove = static_cast<HumanPlayer*>(this->blackPlayer)
-                        ->getRemoteMove();
-                this->logic->executeOrder66(String::parseRow(remoteMove),
-                                            String::parseCol(remoteMove));
-            }
         }
-    } else {
-        currentPlayer->makeMove(this->logic, posMoves, this->printer);
     }
-    this->numOfEmptyCells--;
 }
 
 void Game::printWinner() const {
@@ -172,25 +242,18 @@ void Game::printWinner() const {
         this->printer.printWinner(EMPTY);
 }
 
-void Game::updateCurrentPlayer() {
-    if (isCurrentWhite())
-        this->updateToBlack();
-    else
-        this->updateToWhite();
-
-    this->currentColor = this->currentPlayer->getColor();
-}
-
 bool Game::isCurrentWhite() const {
     return (this->currentColor == WHITE);
 }
 
 void Game::updateToBlack() {
     this->currentPlayer = this->blackPlayer;
+    this->notCurrentPlayer = this->whitePlayer;
 }
 
 void Game::updateToWhite() {
     this->currentPlayer = this->whitePlayer;
+    this->notCurrentPlayer = this->blackPlayer;
 }
 
 int Game::getScore(char color) const {

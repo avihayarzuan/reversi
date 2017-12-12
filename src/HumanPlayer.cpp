@@ -50,7 +50,7 @@ void HumanPlayer::connectToServer() {
 
 int HumanPlayer::sendMessage(char buff[]) {
     int stat;
-    stat = write(clientSocket, buff, sizeof(char) * 256);
+    stat = write(clientSocket, buff, sizeof(char) * SIZE);
     if (stat == -1) {
         throw "Error writing message to socket";
     }
@@ -59,8 +59,8 @@ int HumanPlayer::sendMessage(char buff[]) {
 
 int HumanPlayer::readMessage() {
     int stat;
-    char returnBuff[256];
-    stat = read(clientSocket, returnBuff, sizeof(char) * 256);
+    char returnBuff[SIZE];
+    stat = read(clientSocket, returnBuff, sizeof(char) * SIZE);
     if (stat == -1) {
         throw "Error reading message from socket";
     }
@@ -75,13 +75,14 @@ string HumanPlayer::getRemoteMove() {
 
 void HumanPlayer::setColorFromSocket() {
     int stat;
-    char buff[256];
-    stat = read(clientSocket, buff, sizeof(char) * 256);
+    char buff[SIZE];
+    stat = read(clientSocket, buff, sizeof(char) * SIZE);
     if (stat == -1) {
         throw "Error get color";
     }
     char answer = buff[0];
     this->color = answer;
+    cout << "you are color: " << answer << endl;
 }
 
 char HumanPlayer::getColor() const {
@@ -108,7 +109,6 @@ string HumanPlayer::makeMove(GameLogic *logic, map<string, Cell> &posMoves,
             }
         }
         printer.illegalMove();
-        //printer->plsEnterMove();
     } while (true);
     string move;
     logic->executeOrder66(row, col);

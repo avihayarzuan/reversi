@@ -4,6 +4,7 @@
  */
 #ifndef EX2_HUMANPLAYER_H
 #define EX2_HUMANPLAYER_H
+#define SIZE 256
 
 #include "Player.h"
 #include <iostream>
@@ -22,12 +23,35 @@ class HumanPlayer : public Player {
      * @param color - player's color.
      */
     HumanPlayer(char color);
-
+    /**
+     *
+     * @param serverIP the ip of the server
+     * @param serverPort the server port number
+     */
     void setConnection(const char *serverIP, int serverPort);
+    /**
+     * the function connect to server
+     */
     void connectToServer();
+    /**
+     *
+     * @param buff the message to send
+     * @return int the status number for the write function
+     */
     int sendMessage(char buff[]);
+    /**
+     *
+     * @return status of the read function
+     */
     int readMessage();
+    /**
+     * set the color of the player from the message of the server
+     */
     void setColorFromSocket();
+    /**
+     *
+     * @return the move that was added by the read message function
+     */
     string getRemoteMove();
     /**
      * @return player's color.
