@@ -5,6 +5,8 @@
 #ifndef EX2_HUMANPLAYER_H
 #define EX2_HUMANPLAYER_H
 #define SIZE 256
+#define MAX_MESSAGE 256
+
 
 #include "Player.h"
 #include <iostream>
@@ -15,6 +17,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+struct ArrayHolder
+{
+    char array[MAX_MESSAGE];
+};
+
 
 class HumanPlayer : public Player {
  public:
@@ -33,6 +41,11 @@ class HumanPlayer : public Player {
      * the function connect to server
      */
     void connectToServer();
+
+    void chooseOption();
+
+    ArrayHolder readMessage();
+
     /**
      *
      * @param buff the message to send
@@ -43,7 +56,7 @@ class HumanPlayer : public Player {
      *
      * @return status of the read function
      */
-    int readMessage();
+    int readRemoteMove();
     /**
      * set the color of the player from the message of the server
      */
@@ -73,6 +86,8 @@ class HumanPlayer : public Player {
      */
     string makeMove(GameLogic *logic, map<string, Cell> &posMoves,
                     ConsoleMsgs printer);
+
+    string getGameName() const;
  private:
     /**
      * Members.
@@ -82,6 +97,7 @@ class HumanPlayer : public Player {
     int serverPort;
     int clientSocket;
     string remoteMove;
+    string gameName;
 };
 
 #endif //EX2_HUMANPLAYER_H

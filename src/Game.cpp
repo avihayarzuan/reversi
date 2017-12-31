@@ -61,7 +61,8 @@ void Game::initRemote() {
     int port = ReadSettings::getPort(buf);
     static_cast<HumanPlayer*>(this->currentPlayer)->setConnection(i, port);
     static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
-    static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
+    static_cast<HumanPlayer*>(this->currentPlayer)->chooseOption();
+//    static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
     // Initializing the second player and setting the current player
     if (this->currentPlayer->getColor() == WHITE) {
@@ -114,14 +115,14 @@ void Game::remoteplayOneTurn() {
     }
 
     if (this->isLocalTurn) {
-//        this->isLocalTurn = false;
 
 // if there are possiblemoves
         if (posMoves.size()) {
             string move = currentPlayer->makeMove(this->logic, posMoves,
                                                   this->printer);
+            string playMove = String::addPlay(move);
             char buf[SIZE];
-            strcpy(buf, move.c_str());
+            strcpy(buf, playMove.c_str());
             try {
                 static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
                         buf);
@@ -132,7 +133,7 @@ void Game::remoteplayOneTurn() {
 
             // if there are no possiblemoves:
         } else {
-            char buf[] = "no-move";
+            char buf[] = "play no move";
             try {
                 static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
                         buf);
@@ -143,12 +144,11 @@ void Game::remoteplayOneTurn() {
         }
     } else {
         // if it's not local turn:
-//        this->isLocalTurn = true;
 
 // if there are possiblemoves
         if (posMoves.size()) {
             try {
-                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readMessage();
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readRemoteMove();
             } catch (const char *msg) {
                 cout << "Cannot read Message. Reason: " << msg << endl;
                 exit(-1);
@@ -163,7 +163,7 @@ void Game::remoteplayOneTurn() {
             // if there are no possiblemoves:
         } else {
             try {
-                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readMessage();
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readRemoteMove();
                 string remoteMove = static_cast<HumanPlayer*>(this
                         ->currentPlayer)->getRemoteMove();
                 cout << remoteMove << endl;
@@ -199,7 +199,13 @@ void Game::playOneTurn() {
 }
 
 void Game::endConnection() {
-    char buf[] = "End";
+    string name = static_cast<HumanPlayer*>(this->currentPlayer)->getGameName();
+    char buf[SIZE];
+    strcpy(buf, "close ");
+    strcat(buf, name.c_str());
+//    = "close " + name;
+//    strcat(buf, name.c_str());
+    //    strcat(buf, )
     try {
         int stat = static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
                 buf);

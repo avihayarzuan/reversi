@@ -20,9 +20,10 @@ class String {
    * @param y - y coordinate
    * @return "(x,y)"
    */
-  static string intToPoint(int x, int y);
+  static string intToPoint(int x, int y); // to '(x, y)'
   static int parseRow(string move); // from '(X, Y)' TO X
   static int parseCol(string move); // from '(X, Y)' TO Y
+  static string addPlay(string move); // (X, Y) to "play X Y"
  private:
   static int stoi(string str);
 };
