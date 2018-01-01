@@ -9,6 +9,7 @@ HumanPlayer::HumanPlayer(char color)
     this->serverIP = NULL;
     this->serverPort = 0;
     this->clientSocket = 0;
+//    this->serverClosing = false;
 }
 
 void HumanPlayer::setConnection(const char *serverIP, int serverPort) {
@@ -64,7 +65,11 @@ int HumanPlayer::readRemoteMove() {
     if (stat == -1) {
         throw "Error reading message from socket";
     }
-    cout << returnBuff << endl;
+    if (strcmp(returnBuff, "closing") == 0) {
+        cout << "Server is shutting down" << endl;
+    } else {
+        cout << returnBuff << endl;
+    }
     this->remoteMove = returnBuff;
     return stat;
 }

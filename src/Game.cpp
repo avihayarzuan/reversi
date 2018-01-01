@@ -64,7 +64,7 @@ void Game::initRemote() {
     static_cast<HumanPlayer*>(this->currentPlayer)->chooseOption();
 //    static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
-    // Initializing the second player and setting the current player
+// Initializing the second player and setting the current player
     if (this->currentPlayer->getColor() == WHITE) {
         this->whitePlayer = this->currentPlayer;
         this->blackPlayer = new HumanPlayer(BLACK);
@@ -148,7 +148,8 @@ void Game::remoteplayOneTurn() {
 // if there are possiblemoves
         if (posMoves.size()) {
             try {
-                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readRemoteMove();
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)
+                        ->readRemoteMove();
             } catch (const char *msg) {
                 cout << "Cannot read Message. Reason: " << msg << endl;
                 exit(-1);
@@ -156,17 +157,26 @@ void Game::remoteplayOneTurn() {
             string remoteMove =
                     static_cast<HumanPlayer*>(this->notCurrentPlayer)
                             ->getRemoteMove();
-            this->logic->executeOrder66(String::parseRow(remoteMove),
-                                        String::parseCol(remoteMove));
-            this->numOfEmptyCells--;
+            if (remoteMove.compare("closing") == 0) {
+                this->shouldRun = false;
+            } else {
+                this->logic->executeOrder66(String::parseRow(remoteMove),
+                                            String::parseCol(remoteMove));
+                this->numOfEmptyCells--;
+            }
 
             // if there are no possiblemoves:
         } else {
             try {
-                static_cast<HumanPlayer*>(this->notCurrentPlayer)->readRemoteMove();
+                static_cast<HumanPlayer*>(this->notCurrentPlayer)
+                        ->readRemoteMove();
                 string remoteMove = static_cast<HumanPlayer*>(this
                         ->currentPlayer)->getRemoteMove();
-                cout << remoteMove << endl;
+                if (remoteMove.compare("closing") == 0) {
+                    this->shouldRun = false;
+                } else {
+                    cout << remoteMove << endl;
+                }
             } catch (const char *msg) {
                 cout << "Cannot read Message. Reason: " << msg << endl;
                 exit(-1);

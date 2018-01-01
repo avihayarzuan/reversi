@@ -98,6 +98,7 @@ class HumanPlayer : public Player {
     int clientSocket;
     string remoteMove;
     string gameName;
+//    bool serverClosing;
 };
 
 #endif //EX2_HUMANPLAYER_H
