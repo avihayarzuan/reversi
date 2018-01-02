@@ -1,8 +1,6 @@
 /*
- * readSettings.h
- *
- *  Created on: Dec 10, 2017
- *      Author: avihay
+ * Kfir Ventura
+ * Avihay Arzuan
  */
 
 #ifndef SRC_READSETTINGS_H_
@@ -18,8 +16,18 @@ using namespace std;
  */
 class ReadSettings {
  public:
-     static int getPort(char * path);
-     static string getIP(char * path);
+    /**
+     * static method to read from file settings for player
+     * @param path of file to read from.
+     * @return port number
+     */
+    static int getPort(char * path);
+    /**
+     * static method to read from file settings for player
+     * @param path of file to read from.
+     * @return ip string
+     */
+    static string getIP(char * path);
 
 };
 

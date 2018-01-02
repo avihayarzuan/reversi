@@ -9,7 +9,6 @@ HumanPlayer::HumanPlayer(char color)
     this->serverIP = NULL;
     this->serverPort = 0;
     this->clientSocket = 0;
-//    this->serverClosing = false;
 }
 
 void HumanPlayer::setConnection(const char *serverIP, int serverPort) {
@@ -101,58 +100,62 @@ void HumanPlayer::chooseOption() {
         ArrayHolder msg;
         char buf1[MAX_MESSAGE];
         char buf2[MAX_MESSAGE];
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
         cin >> choice;
-        if (choice == 1) {
-            char start[MAX_MESSAGE];
-            cout << "Please type your game name:" << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-            cin.getline(buf1, sizeof(buf1));
-            this->gameName = buf1;
-            strcpy(start, "start ");
-            strcat(start, buf1);
-            sendMessage(start);
-            msg = readMessage();
-            if (msg.array[0] == '-' && msg.array[1] == '1') {
-                cout << "the game name already exist" << endl;
-            } else if (msg.array[0] == '1') {
-                buf2[0] = '1';
-                buf2[1] = '\0';
-                sendMessage(buf2);
-                cout << "waiting for other player to connect game" << endl;
-                setColorFromSocket();
-                choosing = false;
-            }
-        } else if (choice == 2) {
-            strcpy(buf2, "list_games ");
-            sendMessage(buf2);
-            msg = readMessage();
-            for (int i = 0; i < MAX_MESSAGE; i++) {
-                if (msg.array[i] == '\0') {
-                    break;
-                } else {
-                    cout << msg.array[i];
+        if (choice != 0) {
+            if (choice == 1) {
+                char start[MAX_MESSAGE];
+                cout << "Please type your game name:" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+                cin.getline(buf1, sizeof(buf1));
+                this->gameName = buf1;
+                strcpy(start, "start ");
+                strcat(start, buf1);
+                sendMessage(start);
+                msg = readMessage();
+                if (msg.array[0] == '-' && msg.array[1] == '1') {
+                    cout << "the game name already exist" << endl;
+                } else if (msg.array[0] == '1') {
+                    buf2[0] = '1';
+                    buf2[1] = '\0';
+                    sendMessage(buf2);
+                    cout << "waiting for other player to connect game" << endl;
+                    setColorFromSocket();
+                    choosing = false;
                 }
-            }
-        } else if (choice == 3) {
-            char join[MAX_MESSAGE];
-            cout << "Please type game name to join:" << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
-            cin.getline(buf1, sizeof(buf1));
-            this->gameName = buf1;
-            strcpy(join, "join ");
-            strcat(join, buf1);
-            sendMessage(join);
-            msg = readMessage();
-            if (msg.array[0] == '-' && msg.array[1] == '1') {
-                cout << "the game name not exist" << endl;
-            } else if (msg.array[0] == '1') {
-                buf2[0] = '1';
-                buf2[1] = '\0';
+            } else if (choice == 2) {
+                strcpy(buf2, "list_games ");
                 sendMessage(buf2);
-                setColorFromSocket();
-                choosing = false;
+                msg = readMessage();
+                for (int i = 0; i < MAX_MESSAGE; i++) {
+                    if (msg.array[i] == '\0') {
+                        break;
+                    } else {
+                        cout << msg.array[i];
+                    }
+                }
+            } else if (choice == 3) {
+                char join[MAX_MESSAGE];
+                cout << "Please type game name to join:" << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+                cin.getline(buf1, sizeof(buf1));
+                this->gameName = buf1;
+                strcpy(join, "join ");
+                strcat(join, buf1);
+                sendMessage(join);
+                msg = readMessage();
+                if (msg.array[0] == '-' && msg.array[1] == '1') {
+                    cout << "the game name not exist" << endl;
+                } else if (msg.array[0] == '1') {
+                    buf2[0] = '1';
+                    buf2[1] = '\0';
+                    sendMessage(buf2);
+                    setColorFromSocket();
+                    choosing = false;
+                }
             }
         }
     }

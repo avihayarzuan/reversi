@@ -62,7 +62,6 @@ void Game::initRemote() {
     static_cast<HumanPlayer*>(this->currentPlayer)->setConnection(i, port);
     static_cast<HumanPlayer*>(this->currentPlayer)->connectToServer();
     static_cast<HumanPlayer*>(this->currentPlayer)->chooseOption();
-//    static_cast<HumanPlayer*>(this->currentPlayer)->setColorFromSocket();
 
 // Initializing the second player and setting the current player
     if (this->currentPlayer->getColor() == WHITE) {
@@ -213,9 +212,6 @@ void Game::endConnection() {
     char buf[SIZE];
     strcpy(buf, "close ");
     strcat(buf, name.c_str());
-//    = "close " + name;
-//    strcat(buf, name.c_str());
-    //    strcat(buf, )
     try {
         int stat = static_cast<HumanPlayer*>(this->currentPlayer)->sendMessage(
                 buf);

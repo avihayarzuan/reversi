@@ -41,11 +41,16 @@ class HumanPlayer : public Player {
      * the function connect to server
      */
     void connectToServer();
-
+    /**
+     * after connecting to server the player need to choose
+     * one of the options available at the server
+     */
     void chooseOption();
-
+    /**
+     * read from socket
+     * @return return a struct that has the char array
+     */
     ArrayHolder readMessage();
-
     /**
      *
      * @param buff the message to send
@@ -86,7 +91,10 @@ class HumanPlayer : public Player {
      */
     string makeMove(GameLogic *logic, map<string, Cell> &posMoves,
                     ConsoleMsgs printer);
-
+    /**
+     * return the game name that the player chose to play
+     * @return string of the game name
+     */
     string getGameName() const;
  private:
     /**
@@ -98,7 +106,6 @@ class HumanPlayer : public Player {
     int clientSocket;
     string remoteMove;
     string gameName;
-//    bool serverClosing;
 };
 
 #endif //EX2_HUMANPLAYER_H

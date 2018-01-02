@@ -5,7 +5,6 @@
 #ifndef EX2_GAMELOGIC_H
 #define EX2_GAMELOGIC_H
 
-//#include "CellMap.h"
 #include "Board.h"
 
 typedef enum Direction {
